@@ -1,0 +1,4 @@
+name = Ding Nyhedslisten
+description = Nyhedslisten intergration
+core = 7.x
+package = Ding!
