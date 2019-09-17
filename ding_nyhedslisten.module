@@ -5,3 +5,20 @@
  *
  */
 
+/**
+ * Implements hook_menu().
+ */
+function ding_nyhedslisten_menu() {
+  $items = array();
+
+  $items['admin/config/ding/nyhedslisten'] = array(
+    'title' => 'Nyhedslisten',
+    'description' => 'Configure nyhedslisten',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ding_nyhedslisten_admin_settings_form'),
+    'access arguments' => array('administer content'),
+    'file' => 'includes/ding_nyhedslisten.admin.inc',
+  );
+
+  return $items;
+}

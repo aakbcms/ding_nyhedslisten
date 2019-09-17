@@ -1,0 +1,5 @@
+{
+    "require": {
+        "heyloyalty/hl-phpclient": "^1.6"
+    }
+}
