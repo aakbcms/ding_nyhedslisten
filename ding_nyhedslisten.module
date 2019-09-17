@@ -5,15 +5,17 @@
  *
  */
 
+include_once 'ding_nyhedslisten.features.inc';
+
 /**
  * Implements hook_menu().
  */
 function ding_nyhedslisten_menu() {
   $items = array();
 
-  $items['admin/config/ding/nyhedslisten'] = array(
-    'title' => 'Nyhedslisten',
-    'description' => 'Configure nyhedslisten',
+  $items['admin/config/ding/newslists'] = array(
+    'title' => 'News lists',
+    'description' => 'Configure news lists',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('ding_nyhedslisten_admin_settings_form'),
     'access arguments' => array('administer content'),
