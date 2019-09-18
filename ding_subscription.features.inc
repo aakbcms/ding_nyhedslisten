@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * ding_nyhedslisten.features.inc
+ * ding_subscription.features.inc
  */
 
 /**
  * Implements hook_ctools_plugin_api().
  */
-function ding_nyhedslisten_ctools_plugin_api($module = NULL, $api = NULL) {
+function ding_subscription_ctools_plugin_api($module = NULL, $api = NULL) {
   if ($module == "page_manager" && $api == "pages_default") {
     return array("version" => "1");
   }

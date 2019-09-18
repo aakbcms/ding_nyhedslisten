@@ -1,10 +1,10 @@
-name = Ding Nyhedslisten
-description = Nyhedslisten intergration
+name = Ding Subscription
+description = HeyLoyalty subscription integration
 core = 7.x
 package = Ding!
 dependencies[] = ctools
 dependencies[] = page_manager
-configuration = admin/config/ding/newslists
+configuration = admin/config/ding/subscription
 features[ctools][] = page_manager:pages_default:1
 features[features_api][] = api:2
 features[page_manager_pages][] = user_subscriptions

@@ -4,7 +4,7 @@
  * Wrapper class for the Heyloyalty client library.
  */
 
-require_once drupal_get_path('module', 'ding_nyhedslisten') . '/vendor/autoload.php';
+require_once drupal_get_path('module', 'ding_subscription') . '/vendor/autoload.php';
 
 use Phpclient\HLClient;
 use Phpclient\HLLists;

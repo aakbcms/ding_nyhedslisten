@@ -7,12 +7,12 @@
 /**
  * Defines the administration settings form.
  */
-function ding_nyhedslisten_admin_settings_form($form, &$form_state) {
+function ding_subscription_admin_settings_form($form, &$form_state) {
   $form = [
     '#tree' => TRUE,
   ];
 
-  $default = variable_get('ding_nyhedslisten_settings', []);
+  $default = variable_get('ding_subscription_settings', []);
   $default = $default + [
     'api' => [
       'key' => '',
@@ -21,19 +21,19 @@ function ding_nyhedslisten_admin_settings_form($form, &$form_state) {
     'list' => [],
   ];
 
-  $form['ding_nyhedslisten_settings'] = [
+  $form['ding_subscription_settings'] = [
     '#type' => 'fieldset',
-    '#title' => t('Nyhedslisten configuration'),
+    '#title' => t('subscription configuration'),
   ];
 
-  $form['ding_nyhedslisten_settings']['api']['key'] = [
+  $form['ding_subscription_settings']['api']['key'] = [
     '#type' => 'textfield',
     '#title' => t('API key'),
     '#required' => TRUE,
     '#default_value' => $default['api']['key'],
   ];
 
-  $form['ding_nyhedslisten_settings']['api']['secret'] = [
+  $form['ding_subscription_settings']['api']['secret'] = [
     '#type' => 'textfield',
     '#title' => t('Client secret'),
     '#required' => TRUE,
@@ -44,7 +44,7 @@ function ding_nyhedslisten_admin_settings_form($form, &$form_state) {
     $hl = new HeyloyaltyClient($default['api']['key'], $default['api']['secret']);
     $lists = $hl->getListNames();
 
-    $form['ding_nyhedslisten_settings']['list'] = [
+    $form['ding_subscription_settings']['list'] = [
       '#type' => 'select',
       '#title' => t('Lists'),
       '#description' => t('Select list to use'),

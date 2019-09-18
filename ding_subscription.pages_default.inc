@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * ding_nyhedslisten.pages_default.inc
+ * ding_subscription.pages_default.inc
  */
 
 /**
  * Implements hook_default_page_manager_pages().
  */
-function ding_nyhedslisten_default_page_manager_pages() {
+function ding_subscription_default_page_manager_pages() {
   $page = new stdClass();
   $page->disabled = FALSE; /* Edit this to true to make a default page disabled initially */
   $page->api_version = 1;

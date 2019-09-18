@@ -5,21 +5,21 @@
  *
  */
 
-include_once 'ding_nyhedslisten.features.inc';
+include_once 'ding_subscription.features.inc';
 
 /**
  * Implements hook_menu().
  */
-function ding_nyhedslisten_menu() {
+function ding_subscription_menu() {
   $items = array();
 
-  $items['admin/config/ding/newslists'] = array(
-    'title' => 'News lists',
-    'description' => 'Configure news lists',
+  $items['admin/config/ding/subscription'] = array(
+    'title' => 'Subscription',
+    'description' => 'Configure subscriptions',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('ding_nyhedslisten_admin_settings_form'),
+    'page arguments' => array('ding_subscription_admin_settings_form'),
     'access arguments' => array('administer content'),
-    'file' => 'includes/ding_nyhedslisten.admin.inc',
+    'file' => 'includes/ding_subscription.admin.inc',
   );
 
   return $items;
@@ -32,7 +32,7 @@ function ding_nyhedslisten_menu() {
  * args, contexts, content_types. In this case the subdirectories of
  * ctools_plugin_example/panels are used.
  */
-function ding_nyhedslisten_ctools_plugin_directory($module, $plugin) {
+function ding_subscription_ctools_plugin_directory($module, $plugin) {
   if ($module == 'ctools' && !empty($plugin)) {
     return 'plugins/' . $plugin;
   }
