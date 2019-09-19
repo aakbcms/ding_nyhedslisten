@@ -80,7 +80,7 @@ class HeyloyaltyClient {
 
     $response = $listsService->getList($listId);
     if (array_key_exists('response', $response)) {
-      $list = $this->jsonDecode($response['response']);
+      $list = $this->jsonDecode($response['response'], TRUE);
     }
 
     return $list ?? NULL;
