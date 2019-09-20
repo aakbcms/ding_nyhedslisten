@@ -126,15 +126,24 @@ function ding_subscription_admin_settings_form($form, &$form_state) {
   return system_settings_form($form);
 }
 
+/**
+ * Add one more submit callback.
+ */
 function ding_subscription_admin_settings_form_add_one($form, &$form_state) {
   $form_state['num_lists']++;
   $form_state['rebuild'] = TRUE;
 }
 
+/**
+ * Ajax add-one-more callback.
+ */
 function ding_subscription_admin_settings_form_add_one_callback($form, $form_state) {
   return $form['ding_subscription_settings']['lists'];
 }
 
+/**
+ * Administration menu submit.
+ */
 function ding_subscription_admin_settings_form_submit($form, &$form_state) {
   // Remove non selected list configurations.
   foreach ($form_state['values']['ding_subscription_settings']['lists'] as $id => $data) {

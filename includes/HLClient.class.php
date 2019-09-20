@@ -127,28 +127,55 @@ class HeyloyaltyClient {
   }
 
   /**
-   * Add a new member to list.
+   * Update member information.
    *
+   * If the member don't exists it will be created.
+   *
+   * @param $mail
+   *   The users mail.
+   * @param $name
+   *   The name of the user (used to create the user).
    * @param $listId
-   *   The ID of the list to add the member too.
-   * @param $fields
-   *   The fields for the member on the list.
+   *   The list to update the user at.
+   * @param array $fields
+   *   The fields and values to update.
    *
-   * @return mixed
-   *
+   * @return bool|mixed
+   *   JSON decoded array.
    *
    * @throws \HLErrorException
    *   If error is return from Heyloyalty.
    */
-  public function addMember($listId, $fields) {
+  public function updateMember($mail, $name, $listId, array $fields) {
     $client = $this->getClient();
     $memberService = new HLMembers($client);
+    $member = $this->getMember($listId, $mail);
 
-    $response = $memberService->create($listId, $fields);
+    if (is_null($member)) {
+      // create a member on a list
+      $fields += [
+        'firstname' => $name,
+        'email' => $mail,
+      ];
+      $response = $memberService->create($listId, $fields);
+      if (array_key_exists('response', $response)) {
+        $res = $this->jsonDecode($response['response']);
+        if (array_key_exists('id', $res)) {
+          return TRUE;
+        }
+        else {
+          throw new HLErrorException('Unknown error in creating user subscriptions');
+        }
+      }
+    }
+    else {
+      $response = $memberService->patch($listId, $member['id'], $fields);
+      if (array_key_exists('response', $response) && !empty($response['response'])) {
+        return $this->jsonDecode($response['response']);
+      }
+    }
 
-    // TODO: handle member exists error.
-
-    return $this->jsonDecode($response['response']);
+    return TRUE;
   }
 
   /**
@@ -197,6 +224,9 @@ class HeyloyaltyClient {
 }
 
 /**
- * Class HLErrorException
+ * Class HLErrorException.
+ *
+ * Used to indicate an error at the server or an error message was return for
+ * a give request.
  */
 class HLErrorException extends \Exception {}

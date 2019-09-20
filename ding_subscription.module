@@ -37,3 +37,76 @@ function ding_subscription_ctools_plugin_directory($module, $plugin) {
     return 'plugins/' . $plugin;
   }
 }
+
+function ding_subscription_form($form, &$form_state, $user) {
+  $configuration = variable_get('ding_subscription_settings', []);
+  $hl = new HeyloyaltyClient($configuration['api']['key'], $configuration['api']['secret']);
+
+  $form['#tree'] = TRUE;
+
+  // Store the users mail server side with the form (needed in the submit
+  // handler).
+  $form['mail'] = [
+    '#type' => 'value',
+    '#value' => $user->mail
+  ];
+  $form['users_name'] = [
+    '#type' => 'value',
+    '#value' => $user->data['display_name'],
+  ];
+
+  foreach ($configuration['lists'] as $list) {
+    $hl_list = $hl->getList($list['id']);
+
+    // Build subscription options based on configuration.
+    $fields = array_column($hl_list['fields'], NULL, 'id');
+    $options = $fields[$list['field']]['options'];
+    $types = array_values($list['types']);
+    $options = array_filter($options, function ($id, $val) use ($types) {
+      return in_array($val, $types);
+    }, ARRAY_FILTER_USE_BOTH);
+
+    // Find user subscriptions.
+    $selected = [];
+    $member = $hl->getMember($list['id'], $user->mail);
+    $name = $fields[$list['field']]['name'];
+    if (!is_null($member) && $member['status']['status'] == 'active') {
+      $selected = array_column($member[$name], 'id');
+    }
+
+    $form['lists'][$list['id']][$name][] = [
+      '#type' => 'checkboxes',
+      '#title' => $list['label'],
+      '#description' => $list['description'],
+      '#options' => $options,
+      '#default_value' => array_combine($selected, $selected),
+    ];
+  }
+
+  $form['actions']['update'] = array(
+    '#type' => 'submit',
+    '#value' => t('Update subscriptions'),
+    '#weight' => 15,
+    '#submit' => array('ding_subscription_form_submit'),
+  );
+
+  return $form;
+}
+
+/**
+ * Submit handler for the subscription form.
+ */
+function ding_subscription_form_submit($form, &$form_state) {
+  $configuration = variable_get('ding_subscription_settings', []);
+  $hl = new HeyloyaltyClient($configuration['api']['key'], $configuration['api']['secret']);
+
+  $lists = $form_state['values']['lists'];
+  foreach ($lists as $list_id => $list) {
+    $field_name = key($list);
+    $selected = call_user_func_array('array_merge', $list[$field_name]);
+    $selected = array_filter($selected);
+    $hl->updateMember($form_state['values']['mail'], $form_state['values']['users_name'] , $list_id, [
+      $field_name => $selected,
+    ]);
+  }
+}

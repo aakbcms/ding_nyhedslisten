@@ -9,8 +9,8 @@
  * by the system that includes this file.
  */
 $plugin = array(
-  'title' => t('Ding news lists'),
-  'description' => t('Display news lists subscriptions.'),
+  'title' => t('Ding subscription lists'),
+  'description' => t('Display lists subscriptions.'),
   'single' => TRUE,
   'edit form' => 'ding_subscription_newslists_edit_form',
   'render callback' => 'ding_subscription_newslists_content_type_render',
@@ -28,7 +28,13 @@ function ding_subscription_newslists_content_type_render($subtype, $conf, $panel
   if (isset($context->data)) {
     $account = $context->data;
 
-    $block->content = 'BLA BLA BLA';
+    $config = variable_get('ding_subscription_settings', []);
+    if (empty($config)) {
+      $block->content = t('Subscriptions has not yet been configured. Please contact site administrator.');
+      return $block;
+    }
+
+    $block->content = drupal_get_form('ding_subscription_form', $account);
   }
 
   return $block;
