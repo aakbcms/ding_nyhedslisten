@@ -38,6 +38,14 @@ function ding_subscription_ctools_plugin_directory($module, $plugin) {
   }
 }
 
+/**
+ * Implements hook_form().
+ *
+ * The form used to allow the end-user to sign-up on the different lists.
+ *
+ * @throws \HLErrorException
+ *   If communication fails with HL.
+ */
 function ding_subscription_form($form, &$form_state, $user) {
   $configuration = variable_get('ding_subscription_settings', []);
   $hl = new HeyloyaltyClient($configuration['api']['key'], $configuration['api']['secret']);
@@ -61,10 +69,15 @@ function ding_subscription_form($form, &$form_state, $user) {
     // Build subscription options based on configuration.
     $fields = array_column($hl_list['fields'], NULL, 'id');
     $options = $fields[$list['field']]['options'];
-    $types = array_values($list['types']);
-    $options = array_filter($options, function ($id, $val) use ($types) {
-      return in_array($val, $types);
-    }, ARRAY_FILTER_USE_BOTH);
+
+    // If automatically use all values not selected filter options base on
+    // selections.
+    if (!$list['auto']) {
+      $types = array_values($list['types']);
+      $options = array_filter($options, function ($id, $val) use ($types) {
+        return in_array($val, $types);
+      }, ARRAY_FILTER_USE_BOTH);
+    }
 
     // Find user subscriptions.
     $selected = [];

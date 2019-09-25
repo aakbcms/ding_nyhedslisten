@@ -52,7 +52,7 @@ function ding_subscription_admin_settings_form($form, &$form_state) {
     ];
 
     if (empty($form_state['num_lists'])) {
-      $form_state['num_lists'] = count($default['lists']);
+      $form_state['num_lists'] = count($default['lists']) ?? 1;
     }
 
     for ($i = 0; $i < $form_state['num_lists']; $i++) {
@@ -75,20 +75,33 @@ function ding_subscription_admin_settings_form($form, &$form_state) {
         $form['ding_subscription_settings']['lists'][$i]['field'] = [
           '#type' => 'select',
           '#title' => t('Field'),
-          '#description' => t('Select field(s) to use'),
+          '#description' => t('Select multi-valued field to use'),
           '#options' => [0 => t('- Select field -')] + $options,
           '#default_value' => $default['lists'][$i]['field'] ?? 0,
         ];
 
         $fields = array_column($list['fields'], null, 'id');
-        if (isset($default['lists'][$i]['field']) && isset($fields[$default['lists'][$i]['field']]) && array_key_exists('options', $fields[$default['lists'][$i]['field']])) {
+        $options = $fields[$default['lists'][$i]['field']]['options'] ?? FALSE;
+        if (isset($default['lists'][$i]['field']) &&  $options) {
           $form['ding_subscription_settings']['lists'][$i]['types'] = [
             '#type' => 'select',
             '#title' => t('Field'),
             '#description' => t('Select field to use'),
-            '#options' => $fields[$default['lists'][$i]['field']]['options'],
+            '#options' => $options,
             '#multiple' => TRUE,
             '#default_value' => $default['lists'][$i]['types'] ?? [],
+            '#states' => array(
+              'invisible' => array(
+                ':input[name="ding_subscription_settings[lists]['. $i . '][auto]"]' => array('checked' => TRUE),
+              ),
+            ),
+          ];
+
+          $form['ding_subscription_settings']['lists'][$i]['auto'] = [
+            '#type' => 'checkbox',
+            '#title' => t('Automatically use all field values'),
+            '#return' => TRUE,
+            '#default_value' => $default['lists'][$i]['auto'] ?? FALSE,
           ];
 
           $form['ding_subscription_settings']['lists'][$i]['label'] = [

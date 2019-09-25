@@ -75,15 +75,22 @@ class HeyloyaltyClient {
    *   If error is return from Heyloyalty.
    */
   public function getList($listId) {
-    $client = $this->getClient();
-    $listsService = new HLLists($client);
+    static $lists;
+    $lists = is_array($lists) ? $lists : [];
 
-    $response = $listsService->getList($listId);
-    if (array_key_exists('response', $response)) {
-      $list = $this->jsonDecode($response['response'], TRUE);
+    if (isset($lists[$listId])) {
+      $client = $this->getClient();
+      $listsService = new HLLists($client);
+
+      $response = $listsService->getList($listId);
+      if (array_key_exists('response', $response)) {
+        $list = $this->jsonDecode($response['response'], TRUE);
+      }
+
+      $lists[$listId] = $list ?? NULL;
     }
 
-    return $list ?? NULL;
+    return $lists[$listId];
   }
 
   /**
