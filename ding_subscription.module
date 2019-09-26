@@ -22,7 +22,29 @@ function ding_subscription_menu() {
     'file' => 'includes/ding_subscription.admin.inc',
   );
 
+  $items['admin/config/people/subscription'] = array(
+    'title' => 'Lookup subscription',
+    'description' => 'User subscription lookup in heyloyalty',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ding_subscription_lookup_form'),
+    'access arguments' => array('administer users'),
+  );
+
   return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ding_subscription_theme($existing, $type, $theme, $path) {
+  return array(
+    'ding_subscription_user_info' => array(
+      'variables' => array(
+        'items' => [],
+      ),
+      'template' => 'templates/ding-subscription-user-info',
+    ),
+  );
 }
 
 /**
@@ -81,10 +103,10 @@ function ding_subscription_form($form, &$form_state, $user) {
 
     // Find user subscriptions.
     $selected = [];
-    $member = $hl->getMember($list['id'], $user->mail);
+    $hl_member = $hl->getMember($list['id'], $user->mail);
     $name = $fields[$list['field']]['name'];
-    if (!is_null($member) && $member['status']['status'] == 'active') {
-      $selected = array_column($member[$name], 'id');
+    if (!is_null($hl_member) && $hl_member['status']['status'] == 'active') {
+      $selected = array_column($hl_member[$name], 'id');
     }
 
     $form['lists'][$list['id']][$name][] = [
@@ -123,3 +145,130 @@ function ding_subscription_form_submit($form, &$form_state) {
     ]);
   }
 }
+
+/**
+ * Implements hook_form().
+ *
+ * Form used to lookup a given users subscriptions at the provider.
+ */
+function ding_subscription_lookup_form($form, &$form_state) {
+  $form['mail'] = [
+    '#type' => 'textfield',
+    '#title' => t('User mail'),
+    '#description' => t('Enter the mail address for the user to lookup'),
+  ];
+
+  $form['user_info'] = [
+    '#type' => 'fieldset',
+    '#title' => t('User information'),
+    '#prefix' => '<div id="user-info-fieldset-wrapper">',
+    '#suffix' => '</div>',
+  ];
+
+  if (isset($form_state['values']['mail']) && !empty($form_state['values']['mail'])) {
+    $configuration = variable_get('ding_subscription_settings', []);
+    if (empty($configuration['api']['key'])) {
+      $form['user_info']['data'] = [
+        '#markup' => t('Missing configuration. Please configure the integration with the subscription provider.'),
+      ];
+    }
+    else {
+      $hl = new HeyloyaltyClient($configuration['api']['key'], $configuration['api']['secret']);
+
+      $items = [];
+      foreach ($configuration['lists'] as $list) {
+        $item = [
+          'label' => $list['label'],
+          'status' => FALSE
+        ];
+
+        // Find user field subscriptions.
+        $hl_member = $hl->getMember($list['id'], $form_state['values']['mail']);
+        if (!is_null($hl_member)) {
+          $selected = [];
+          $hl_list = $hl->getList($list['id']);
+          $fields = array_column($hl_list['fields'], NULL, 'id');
+          $name = $fields[$list['field']]['name'];
+          if (!is_null($hl_member) && $hl_member['status']['status'] == 'active') {
+            $selected = array_column($hl_member[$name], 'id', 'value');
+            if (!$list['auto']) {
+              // Not all selections available is used, so filter it with list
+              // configuration.
+              $types = array_values($list['types']);
+              $selected = array_filter($selected, function ($id, $val) use ($types) {
+                return in_array($id, $types);
+              }, ARRAY_FILTER_USE_BOTH);
+            }
+          }
+
+          if (!empty($selected)) {
+            $item['status'] = TRUE;
+            $item['selection'] = array_keys($selected);
+          }
+        }
+        $items[] = $item;
+      }
+
+      $form['user_info']['data'] = [
+        '#theme' => 'ding_subscription_user_info',
+        '#items' => $items,
+      ];
+    }
+  }
+
+  $form['submit'] = [
+    '#type' => 'submit',
+    '#value' => t('Lookup user'),
+    '#submit' => array(
+      'ding_subscription_lookup_form_submit',
+    ),
+    '#ajax' => array(
+      'callback' => 'ding_subscription_lookup_form_callback',
+      'method' => 'replace',
+      'wrapper' => 'user-info-fieldset-wrapper',
+    ),
+  ];
+
+  $form['#attached']['css'] = array(
+    drupal_get_path('module', 'ding_subscription') . '/css/ding_subscription.admin.css',
+  );
+
+  return $form;
+}
+
+
+/**
+ * Add one more submit callback.
+ */
+function ding_subscription_lookup_form_submit($form, &$form_state) {
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Ajax add-one-more callback.
+ */
+function ding_subscription_lookup_form_callback($form, $form_state) {
+  return $form['user_info'];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

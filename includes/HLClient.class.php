@@ -78,7 +78,7 @@ class HeyloyaltyClient {
     static $lists;
     $lists = is_array($lists) ? $lists : [];
 
-    if (isset($lists[$listId])) {
+    if (!isset($lists[$listId])) {
       $client = $this->getClient();
       $listsService = new HLLists($client);
 
