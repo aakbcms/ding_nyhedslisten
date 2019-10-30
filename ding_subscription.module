@@ -74,6 +74,13 @@ function ding_subscription_form($form, &$form_state, $user) {
 
   $form['#tree'] = TRUE;
 
+  $form['#attributes'] = array(
+    'class' => 'ding-subscription',
+  );
+  $form['#attached']['css'] = array(
+    drupal_get_path('module', 'ding_subscription') . '/css/ding_subscription.css',
+  );
+
   // Store the users mail server side with the form (needed in the submit
   // handler).
   $form['mail'] = [

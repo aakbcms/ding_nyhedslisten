@@ -4,7 +4,6 @@
  * Default template file for ding-subscription-user-info theme function.
  */
 
-$t=1;
 ?>
 <ul>
   <?php foreach ($items as $item): ?>
