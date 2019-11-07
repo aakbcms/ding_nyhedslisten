@@ -1,3 +1,32 @@
+/* Set column to use width of site */
 .content-wrapper .ding-subscription .form-item {
+  width: 100%;
   max-width: 100%;
+}
+
+/* Style form label */
+.ding-subscription .form-item label {
+  font-family: FaktPro-SemiBold,sans-serif;
+  margin-bottom: 20px;
+  font-size: 1em;
+}
+
+/* Dont add extra margin on checkbos label */
+.ding-subscription .form-item label.option {
+  padding-top: 0px;
+  margin-bottom: 0px;
+}
+
+/* Style select2 */
+.ding-subscription .form-item .select-wrapper{
+  margin-bottom: 20px;
+  overflow: visible;
+}
+.ding-subscription .form-item .select-wrapper,
+.page-user-subscriptions .select2-dropdown,
+.page-user-subscriptions .select2-results {
+  border: none;
+}
+.ding-subscription .form-item .select2-container--default .select2-selection--multiple {
+  border: none;
 }
