@@ -79,6 +79,15 @@ function ding_subscription_form($form, &$form_state, $user) {
   );
   $form['#attached']['css'] = array(
     drupal_get_path('module', 'ding_subscription') . '/css/ding_subscription.css',
+    'https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css' => array(
+      'type' => 'external',
+    ),
+  );
+  $form['#attached']['js'] = array(
+     drupal_get_path('module', 'ding_subscription') . '/js/ding_subscription.js',
+    'https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js' => array(
+      'type' => 'external',
+    ),
   );
 
   // Store the users mail server side with the form (needed in the submit
@@ -116,13 +125,28 @@ function ding_subscription_form($form, &$form_state, $user) {
       $selected = array_column($hl_member[$name], 'id');
     }
 
-    $form['lists'][$list['id']][$name][] = [
-      '#type' => 'checkboxes',
-      '#title' => $list['label'],
-      '#description' => $list['description'],
-      '#options' => $options,
-      '#default_value' => array_combine($selected, $selected),
-    ];
+    if (count($options) == 1) {
+      $form['lists'][$list['id']][$name][] = [
+        '#type' => 'checkboxes',
+        '#title' => $list['label'],
+        '#description' => $list['description'],
+        '#options' => $options,
+        '#default_value' => array_combine($selected, $selected),
+      ];
+    }
+    else {
+      $form['lists'][$list['id']][$name][] = [
+        '#type' => 'select',
+        '#title' => $list['label'],
+        '#description' => $list['description'],
+        '#options' => $options,
+        '#default_value' => array_combine($selected, $selected),
+        '#multiple' => TRUE,
+        '#attributes' => array(
+          'class' => array('category-select'),
+        )
+      ];
+    }
   }
 
   $form['actions']['update'] = array(
