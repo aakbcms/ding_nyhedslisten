@@ -74,6 +74,10 @@ function ding_subscription_form($form, &$form_state, $user) {
 
   $form['#tree'] = TRUE;
 
+  $form['title'] = array(
+    '#markup' => '<h2 class="pane-title">' . t('My subscriptions') . '</h2>',
+  );
+
   $form['#attributes'] = array(
     'class' => 'ding-subscription',
   );

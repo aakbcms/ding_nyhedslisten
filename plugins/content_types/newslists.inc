@@ -23,7 +23,7 @@ $plugin = array(
  */
 function ding_subscription_newslists_content_type_render($subtype, $conf, $panel_args, $context) {
   $block = new stdClass();
-  $block->content = '';
+  $block->content = array();
 
   if (isset($context->data)) {
     $account = $context->data;
