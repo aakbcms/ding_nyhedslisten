@@ -25,7 +25,7 @@
 .ding-subscription .form-item .select-wrapper,
 .page-user-subscriptions .select2-dropdown,
 .page-user-subscriptions .select2-results {
-  border: none;
+  /* border: none; */
 }
 .ding-subscription .form-item .select2-container--default .select2-selection--multiple {
   border: none;

@@ -7,7 +7,7 @@
   "use strict";
 
   $(document).ready(function() {
-    $('.category-select').select2({width: '100%'})
+    $('.category-select').select2({width: '100%', placeholder: 'Klik her for at finde kategorier'})
   });
 
 }(jQuery));
