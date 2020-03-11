@@ -158,6 +158,14 @@ class HeyloyaltyClient {
     $memberService = new HLMembers($client);
     $member = $this->getMember($listId, $mail);
 
+    // Hack to handle empty multi-value fields.
+    foreach ($fields as $field => $value) {
+      if (empty($value)) {
+        unset($fields[$field]);
+        $fields[$field . '[]'] = '';
+      }
+    }
+
     if (is_null($member)) {
       // create a member on a list
       $fields += [
