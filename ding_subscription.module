@@ -305,18 +305,47 @@ function ding_subscription_user_profile_submit(&$form, &$form_state) {
   $new_mail = $form_state['values']['profile_provider_fbs']['field_fbs_mail'][LANGUAGE_NONE][0]['value'];
 
   if ($old_mail !== $new_mail) {
-    $configuration = variable_get('ding_subscription_settings', []);
-    if (!empty($configuration) && !empty($configuration['api']['key'])) {
-      $hl = new HeyloyaltyClient($configuration['api']['key'], $configuration['api']['secret']);
+    _ding_subscription_update_user_info($old_mail, $new_mail, $form_state['profile2']->field_fbs_name[LANGUAGE_NONE][0]['value']);
+  }
+}
 
-      // Loop over configured lists and update mail.
-      foreach ($configuration['lists'] as $list) {
-        $name = $form_state['profile2']->field_fbs_name[LANGUAGE_NONE][0]['value'];
-        $hl->updateMember($old_mail, $name, $list['id'], [
-          'firstname' => $name,
-          'email' => $new_mail,
-        ], FALSE);
-      }
+/**
+ * Implements hook_user_presave().
+ *
+ * Ensure that use information is updated in HL during login. Mail may have
+ * changed in the library system.
+ */
+function ding_subscription_user_update(&$edit, $account, $category) {
+  if (ding_user_is_provider_user($account)) {
+    if (isset($edit['mail']) && $edit['mail'] !== $account->mail) {
+      _ding_subscription_update_user_info($account->mail, $edit['mail'], $edit['data']['display_name']);
+    }
+  }
+}
+
+/**
+ * Helper function to update users information at HL.
+ *
+ * @param $old_mail
+ *   Old mail address.
+ * @param $new_mail
+ *   New mail address.
+ * @param $name
+ *   The users name.
+ *
+ * @throws \HLErrorException
+ */
+function _ding_subscription_update_user_info($old_mail, $new_mail, $name) {
+  $configuration = variable_get('ding_subscription_settings', []);
+  if (!empty($configuration) && !empty($configuration['api']['key'])) {
+    $hl = new HeyloyaltyClient($configuration['api']['key'], $configuration['api']['secret']);
+
+    // Loop over configured lists and update mail.
+    foreach ($configuration['lists'] as $list) {
+      $hl->updateMember($old_mail, $name, $list['id'], [
+        'firstname' => $name,
+        'email' => $new_mail,
+      ], FALSE);
     }
   }
 }
