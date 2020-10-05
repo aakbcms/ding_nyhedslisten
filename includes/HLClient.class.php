@@ -146,6 +146,8 @@ class HeyloyaltyClient {
    *   The list to update the user at.
    * @param array $fields
    *   The fields and values to update.
+   * @param bool $shouldCreate
+   *   Should the user be created. Default true.
    *
    * @return bool|mixed
    *   JSON decoded array.
@@ -153,7 +155,7 @@ class HeyloyaltyClient {
    * @throws \HLErrorException
    *   If error is return from Heyloyalty.
    */
-  public function updateMember($mail, $name, $listId, array $fields) {
+  public function updateMember($mail, $name, $listId, array $fields, $shouldCreate = TRUE) {
     $client = $this->getClient();
     $memberService = new HLMembers($client);
     $member = $this->getMember($listId, $mail);
@@ -166,7 +168,7 @@ class HeyloyaltyClient {
       }
     }
 
-    if (is_null($member)) {
+    if (is_null($member) && $shouldCreate) {
       // create a member on a list
       $fields += [
         'firstname' => $name,

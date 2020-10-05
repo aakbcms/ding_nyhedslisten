@@ -286,24 +286,37 @@ function ding_subscription_lookup_form_callback($form, $form_state) {
   return $form['user_info'];
 }
 
+/**
+ * Implements hook_form_profile2_form_alter().
+ *
+ * Add submit function to detect mail change.
+ */
+function ding_subscription_form_profile2_form_alter(&$form, &$form_state) {
+  array_unshift($form['#submit'], 'ding_subscription_user_profile_submit');
+}
 
+/**
+ * Form submit handler for edit profile form.
+ *
+ * Ensure that the mail is updated at HL when user updates mail address.
+ */
+function ding_subscription_user_profile_submit(&$form, &$form_state) {
+  $old_mail = $form_state['profile2']->field_fbs_mail[LANGUAGE_NONE][0]['value'];
+  $new_mail = $form_state['values']['profile_provider_fbs']['field_fbs_mail'][LANGUAGE_NONE][0]['value'];
 
+  if ($old_mail !== $new_mail) {
+    $configuration = variable_get('ding_subscription_settings', []);
+    if (!empty($configuration) && !empty($configuration['api']['key'])) {
+      $hl = new HeyloyaltyClient($configuration['api']['key'], $configuration['api']['secret']);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      // Loop over configured lists and update mail.
+      foreach ($configuration['lists'] as $list) {
+        $name = $form_state['profile2']->field_fbs_name[LANGUAGE_NONE][0]['value'];
+        $hl->updateMember($old_mail, $name, $list['id'], [
+          'firstname' => $name,
+          'email' => $new_mail,
+        ], FALSE);
+      }
+    }
+  }
+}
