@@ -196,6 +196,26 @@ class HeyloyaltyClient {
   }
 
   /**
+   * Delete member from list.
+   *
+   * @param $listId
+   *   The ID of the list to delete member for.
+   * @param $mail
+   *   The mail address for the member to delete.
+   *
+   * @throws \HLErrorException
+   *   If error is return from Heyloyalty.
+   */
+  public function deleteMember($listId, $mail) {
+    $client = $this->getClient();
+    $memberService = new HLMembers($client);
+    $member = $this->getMember($listId, $mail);
+    $res = $memberService->delete($listId, $member['id']);
+
+    $this->jsonDecode($res);
+  }
+
+  /**
    * Decode json string from Heyloyalty.
    *
    * @param $string

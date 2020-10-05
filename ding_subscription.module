@@ -175,9 +175,15 @@ function ding_subscription_form_submit($form, &$form_state) {
     $field_name = key($list);
     $selected = call_user_func_array('array_merge', $list[$field_name]);
     $selected = array_filter($selected);
-    $hl->updateMember($form_state['values']['mail'], $form_state['values']['users_name'] , $list_id, [
-      $field_name => $selected,
-    ]);
+    if (empty($selected)) {
+      $hl->deleteMember($list_id, $form_state['values']['mail']);
+      drupal_set_message('You have not selected any topic and have been unsubscribed from the list.');
+    }
+    else {
+      $hl->updateMember($form_state['values']['mail'], $form_state['values']['users_name'] , $list_id, [
+        $field_name => $selected,
+      ]);
+    }
   }
 }
 
