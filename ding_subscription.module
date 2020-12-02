@@ -316,7 +316,7 @@ function ding_subscription_user_profile_submit(&$form, &$form_state) {
 }
 
 /**
- * Implements hook_user_presave().
+ * Implements hook_user_update().
  *
  * Ensure that use information is updated in HL during login. Mail may have
  * changed in the library system.
@@ -338,8 +338,6 @@ function ding_subscription_user_update(&$edit, $account, $category) {
  *   New mail address.
  * @param $name
  *   The users name.
- *
- * @throws \HLErrorException
  */
 function _ding_subscription_update_user_info($old_mail, $new_mail, $name) {
   $configuration = variable_get('ding_subscription_settings', []);
@@ -348,10 +346,15 @@ function _ding_subscription_update_user_info($old_mail, $new_mail, $name) {
 
     // Loop over configured lists and update mail.
     foreach ($configuration['lists'] as $list) {
-      $hl->updateMember($old_mail, $name, $list['id'], [
-        'firstname' => $name,
-        'email' => $new_mail,
-      ], FALSE);
+      try {
+        $hl->updateMember($old_mail, $name, $list['id'], [
+          'firstname' => $name,
+          'email' => $new_mail,
+        ], FALSE);
+      }
+      catch (HLErrorException $exception) {
+        drupal_set_message(t('The mail address was not updated at the new list provider. Please contact the library. %error', ['%error' => $exception->getMessage()]));
+      }
     }
   }
 }
