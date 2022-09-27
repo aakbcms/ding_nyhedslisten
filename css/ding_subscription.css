@@ -4,24 +4,63 @@
   max-width: 100%;
 }
 
-/* Style form label */
+.ding-subscription h3 {
+  font-size: 1.35rem;
+  line-height: 1.5;
+  border-bottom: 1px solid #000;
+  display: flex;
+  align-content: center;
+  column-gap: 10px;
+  padding-bottom: 4px;
+}
+
+.ding-subscription h3 span.icon {
+  display: flex;
+  align-items: center;
+}
+
+.ding-subscription h3 span.icon svg {
+  width: 24px;
+}
+
 .ding-subscription .form-item label {
   font-family: FaktPro-SemiBold,sans-serif;
   margin-bottom: 20px;
   font-size: 1em;
 }
 
-/* Dont add extra margin on checkbos label */
-.ding-subscription .form-item label.option {
-  padding-top: 0px;
-  margin-bottom: 0px;
+.ding-subscription .form-item.form-type-checkbox {
+  display: flex;
+  column-gap: 12px;
 }
 
-/* Style select2 */
-.ding-subscription .form-item .select-wrapper{
+.ding-subscription .form-item.form-type-checkbox input[type="checkbox"]:not(.switch) {
+  min-width: 21px;
+}
+
+.ding-subscription input[type="submit"].form-submit {
+  padding-left: 35px;
+  padding-right: 35px;
+  height: fit-content;
+  padding-bottom: 18px;
+}
+
+.ding-subscription .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+  padding: 2px 7px;
+}
+
+.ding-subscription .form-item .select-wrapper {
   margin-bottom: 20px;
   overflow: visible;
 }
-.ding-subscription .form-item .select2-container--default .select2-selection--multiple {
-  border: none;
+
+.ding-subscription .select2-container--default .select2-search--inline .select2-search__field,
+.ding-subscription .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  line-height: 1.75;
+}
+
+.ding-subscription .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  margin-right: 4px;
+  border-right: 1px solid #aaa;
+  padding-right: 4px;
 }

@@ -18,6 +18,7 @@ function ding_subscription_admin_settings_form($form, &$form_state) {
       'key' => '',
       'secret' => '',
     ],
+    'intro' => '',
     'lists' => [],
   ];
 
@@ -38,6 +39,13 @@ function ding_subscription_admin_settings_form($form, &$form_state) {
     '#title' => t('Client secret'),
     '#required' => TRUE,
     '#default_value' => $default['api']['secret'],
+  ];
+
+  $form['ding_subscription_settings']['intro'] = [
+    '#type' => 'textarea',
+    '#title' => t('Into text'),
+    '#default_value' => $default['intro'] ?? '',
+    '#rows' => 5,
   ];
 
   if (!empty($default['api']['key'])) {
@@ -104,10 +112,29 @@ function ding_subscription_admin_settings_form($form, &$form_state) {
             '#default_value' => $default['lists'][$i]['auto'] ?? FALSE,
           ];
 
+          $form['ding_subscription_settings']['lists'][$i]['title'] = [
+            '#type' => 'textfield',
+            '#title' => t('Title'),
+            '#default_value' => $default['lists'][$i]['title'] ?? '',
+          ];
+
+          $form['ding_subscription_settings']['lists'][$i]['icon'] = [
+            '#type' => 'textarea',
+            '#title' => t('Icon (svg)'),
+            '#default_value' => $default['lists'][$i]['icon'] ?? '',
+          ];
+
           $form['ding_subscription_settings']['lists'][$i]['label'] = [
             '#type' => 'textfield',
             '#title' => t('Label'),
             '#default_value' => $default['lists'][$i]['label'] ?? '',
+          ];
+
+          $form['ding_subscription_settings']['lists'][$i]['prefix'] = [
+            '#type' => 'textarea',
+            '#title' => t('Prefix'),
+            '#default_value' => $default['lists'][$i]['prefix'] ?? '',
+            '#rows' => 5,
           ];
 
           $form['ding_subscription_settings']['lists'][$i]['description'] = [
@@ -158,7 +185,7 @@ function ding_subscription_admin_settings_form_add_one_callback($form, $form_sta
  * Administration menu submit.
  */
 function ding_subscription_admin_settings_form_submit($form, &$form_state) {
-  // Remove non selected list configurations.
+  // Remove non-selected list configurations.
   foreach ($form_state['values']['ding_subscription_settings']['lists'] as $id => $data) {
     if (isset($data['id']) && $data['id'] == '0') {
       unset($form_state['values']['ding_subscription_settings']['lists'][$id]);

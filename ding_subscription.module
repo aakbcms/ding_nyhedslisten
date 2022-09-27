@@ -75,7 +75,7 @@ function ding_subscription_form($form, &$form_state, $user) {
   $form['#tree'] = TRUE;
 
   $form['title'] = array(
-    '#markup' => '<h2 class="pane-title">' . t('My subscriptions') . '</h2>',
+    '#markup' => '<h2 class="pane-title">' . t('My subscriptions') . '</h2>'.'<p>'.$configuration['intro'].'</p>',
   );
 
   $form['#attributes'] = array(
@@ -129,6 +129,14 @@ function ding_subscription_form($form, &$form_state, $user) {
       $selected = array_column($hl_member[$name], 'id');
     }
 
+    $form['lists'][$list['id']][$name]['title'] = [
+      '#markup' => '<h3><span class="icon">' . $list['icon'] . '</span>' . $list['title'] . '</h3>',
+    ];
+
+    $form['lists'][$list['id']][$name]['prefix'] = [
+      '#markup' => '<p>'. $list['prefix'] . '</p>',
+    ];
+
     if (count($options) == 1) {
       $form['lists'][$list['id']][$name][] = [
         '#type' => 'checkboxes',
@@ -155,7 +163,7 @@ function ding_subscription_form($form, &$form_state, $user) {
 
   $form['actions']['update'] = array(
     '#type' => 'submit',
-    '#value' => t('Update subscriptions'),
+    '#value' => t('Save my choices'),
     '#weight' => 15,
     '#submit' => array('ding_subscription_form_submit'),
   );
